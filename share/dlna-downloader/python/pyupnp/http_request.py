@@ -37,7 +37,7 @@ class HttpRequest(Object):
         self.__response_body = None
         self.__error_message = ''
 
-        self.__connection = httplib2.HTTPConnectionWithTimeout(*address, timeout=timeout)
+        self.__connection = httplib2.Http()
 
 
     def Cancel(self):
@@ -65,7 +65,7 @@ class HttpRequest(Object):
                 stdout_tmp = sys.stdout
                 sys.stdout = sys.stderr
 
-            self.__connection.request(self.__method, self.__url, self.__body, self.__headers)
+            self.__response_headers, self.__response_body = self.__connection.request(method=self.__method, uri=self.__url, body=self.__body, headers=self.__headers)
             if self.__cancel:
                 self.__SetState(self.State.CANCELED)
                 return
@@ -76,16 +76,9 @@ class HttpRequest(Object):
 
             self.__connection.set_debuglevel(0)
 
-            response = self.__connection.getresponse()
-            if self.__cancel:
-                self.__SetState(self.State.CANCELED)
-                return
-
-            self.__response_headers = response.headers
             if logging.root.level == logging.DEBUG:
                 self._logger.debug('RECV:{}'.format(self.__response_headers))
 
-            self.__response_body = response.read()
             if logging.root.level == logging.DEBUG:
                 self._logger.debug('RECV:{}'.format(self.__response_body.decode()))
 
