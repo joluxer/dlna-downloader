@@ -1,6 +1,8 @@
+from urllib.parse import urlparse
 
 def path_from_url(url):
-   return '/'+url.split('/', 3)[3]
+    parsed_url = urlparse(url)
+    return parsed_url.path
 
 
 def host_from_url(url):

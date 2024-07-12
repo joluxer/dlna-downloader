@@ -36,8 +36,12 @@ class HttpRequest(Object):
         self.__response_headers = None
         self.__response_body = None
         self.__error_message = ''
-
-        self.__connection = httplib2.Http()
+        
+        debug_level = 1 if logging.root.level == logging.DEBUG else 0
+        self.__connection = httplib2.Http(timeout=timeout)
+        
+        if debug_level:
+            self.__connection.debuglevel = debug_level
 
 
     def Cancel(self):
@@ -60,26 +64,13 @@ class HttpRequest(Object):
 
     def __WorkerThread(self):
         try:
-            if logging.root.level == logging.DEBUG:
-                self.__connection.set_debuglevel(10)
-                stdout_tmp = sys.stdout
-                sys.stdout = sys.stderr
-
             self.__response_headers, self.__response_body = self.__connection.request(method=self.__method, uri=self.__url, body=self.__body, headers=self.__headers)
             if self.__cancel:
                 self.__SetState(self.State.CANCELED)
                 return
-
-            if logging.root.level == logging.DEBUG:
-                self.__connection.set_debuglevel(10)
-                sys.stdout = stdout_tmp
-
-            self.__connection.set_debuglevel(0)
-
+            
             if logging.root.level == logging.DEBUG:
                 self._logger.debug('RECV:{}'.format(self.__response_headers))
-
-            if logging.root.level == logging.DEBUG:
                 self._logger.debug('RECV:{}'.format(self.__response_body.decode()))
 
             if self.__cancel:

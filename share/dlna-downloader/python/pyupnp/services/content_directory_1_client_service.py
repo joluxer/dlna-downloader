@@ -1,6 +1,7 @@
 from ..client_service import ClientService
 from ..soap_request import SoapRequest
 from ..util import path_from_url, host_from_url, port_from_url
+from urllib.parse import urljoin
 
 
 class ContentDirectory1ClientService(ClientService):
@@ -20,5 +21,11 @@ class ContentDirectory1ClientService(ClientService):
         data['StartingIndex'] = starting_index
         data['RequestedCount'] = requested_count
         data['SortCriteria'] = sort_criteria
+        
+        host = host_from_url(self.control_url)
+        port = port_from_url(self.control_url)
+        base_url = f"http://{host}:{port}"
+        absolute_url = urljoin(base_url, path_from_url(self.control_url))
 
-        return SoapRequest((host_from_url(self.control_url), port_from_url(self.control_url)), path_from_url(self.control_url), self.URN, 'Browse', data)
+        return SoapRequest((host, port), absolute_url, self.URN, 'Browse', data)
+

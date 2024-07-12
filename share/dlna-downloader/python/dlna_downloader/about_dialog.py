@@ -60,12 +60,15 @@ class AboutDialog(wx.Dialog):
 
         sizer.AddSpacer(int(font_normal.GetPixelSize()[1]/3))
 
-        version_text = wx.StaticText(self, label="Version 1.1")
+        version_text = wx.StaticText(self, label="Version 1.2")
         sizer.Add(version_text)
 
         sizer.AddSpacer(int(font_normal.GetPixelSize()[1]))
 
         created_by_text = wx.StaticText(self, label=_("Created by {}".format("Moritz Molch")))
+        sizer.Add(created_by_text, 0, wx.EXPAND)
+
+        created_by_text = wx.StaticText(self, label=_("Contributors: {}".format("Johannes Lode (2024)")))
         sizer.Add(created_by_text, 0, wx.EXPAND)
 
         sizer.AddSpacer(int(font_normal.GetPixelSize()[1]/3))
